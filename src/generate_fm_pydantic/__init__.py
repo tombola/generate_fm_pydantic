@@ -6,16 +6,16 @@ from typing import Dict
 FILEMAKER_TO_PYTHON_TYPES: Dict[str, str] = {
     "Text": "str",
     "Number": "float",
-    "Date": "date",
-    "Time": "time",
-    "Timestamp": "datetime",
+    "Date": "datetime.date",
+    "Time": "datetime.time",
+    "Timestamp": "datetime.datetime",
     "Container": "bytes",
     "Calculation": "Any",
     "Summary": "Any",
 }
 
 PYDANTIC_IMPORTS = """from pydantic import BaseModel, Field
-from datetime import date, time, datetime
+import datetime
 from typing import Any
 """
 def parse_fm_ddr(xml_file: str) -> Dict[str, Dict[str, Dict[str, str]]]:
@@ -51,9 +51,10 @@ def generate_pydantic_models(tables: Dict[str, Dict[str, Dict[str, str]]]) -> st
     models_code = PYDANTIC_IMPORTS
 
     for table_name, fields in tables.items():
-        model_name = table_name.capitalize()
+        model_name = ''.join(word.capitalize() for word in table_name.split())
         models_code += f"\n\nclass {model_name}(BaseModel):\n"
         for field_name, field_info in fields.items():
+
             snake_cased_field_name = field_name.lower().replace(" ", "_")
             field_type = field_info["field_type"]
             field_comment = field_info["field_comment"]
