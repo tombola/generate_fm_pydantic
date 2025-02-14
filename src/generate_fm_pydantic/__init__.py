@@ -48,7 +48,7 @@ def parse_fm_ddr(xml_file: str) -> Dict[str, Dict[str, Dict[str, str]]]:
 
     return tables
 
-def generate_pydantic_models(tables: Dict[str, Dict[str, Dict[str, str]]], skip_field_types: tuple) -> str:
+def generate_pydantic_models(tables: Dict[str, Dict[str, Dict[str, str]]], skip_field_types: tuple = ()) -> str:
     """Generates Pydantic models as Python code."""
     models_code = PYDANTIC_IMPORTS
 
@@ -76,8 +76,10 @@ def generate_pydantic_models(tables: Dict[str, Dict[str, Dict[str, str]]], skip_
 
     return models_code
 
-def generate_models_from_ddr(input_file):
+def generate_models_from_ddr(input_file, all_field_types):
     tables = parse_fm_ddr(input_file)
+    if all_field_types:
+        return generate_pydantic_models(tables)
     return generate_pydantic_models(tables, skip_field_types=FM_COMPLEX_FIELD_TYPES)
 
 def save_models_to_file(models_code, output_file):
@@ -86,11 +88,12 @@ def save_models_to_file(models_code, output_file):
         f.write(models_code)
 
 @click.command()
+@click.option("--all-fields", is_flag=True, default=False, help="Include more complicated FM fields such as calculated and binary")
 @click.argument("input_file")
 @click.argument("output_file")
-def main(input_file, output_file):
+def main(input_file, output_file, all_fields):
     """Generate pydantic models from FileMaker Database Design Report (xml)"""
-    models_code = generate_models_from_ddr(input_file)
+    models_code = generate_models_from_ddr(input_file, all_field_types=all_fields)
     save_models_to_file(models_code, output_file)
 
     print(f"Pydantic models generated at {output_file}")
