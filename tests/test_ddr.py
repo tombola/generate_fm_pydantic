@@ -1,4 +1,4 @@
-from generate_fm_pydantic import parse_fm_ddr
+from generate_fm_pydantic import parse_fm_ddr, generate_models_from_ddr
 import pytest
 
 def test_parse_xml():
@@ -9,3 +9,8 @@ def test_parse_xml():
     assert tables["Products"]["CreationTimestamp"]["field_comment"] == "Date and time each record was created"
     print(tables)
 
+def test_generate_code():
+    models_code = generate_models_from_ddr("tests/data/inventory_test_fmp12.xml")
+    with open("tests/data/inventory_test_models.py", "r") as f:
+        expected_code = f.read()
+    assert models_code == expected_code
