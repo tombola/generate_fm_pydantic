@@ -14,22 +14,21 @@ FILEMAKER_TO_PYTHON_TYPES: Dict[str, str] = {
     "Summary": "Any",
 }
 
-PYDANTIC_IMPORTS = """from pydantic import BaseModel
+PYDANTIC_IMPORTS = """from pydantic import BaseModel, Field
 from datetime import date, time, datetime
 from typing import Any
 """
-
-def parse_fm_ddr(xml_file: str) -> list[list[str, str, str]]:
+def parse_fm_ddr(xml_file: str) -> Dict[str, Dict[str, Dict[str, str]]]:
     """Parses the FileMaker DDR XML file and extracts tables with their fields."""
     with open(xml_file, "rb") as f:
         tree = etree.parse(f)
 
-    tables = []
+    tables = {}
 
     # Find all Table elements
     for table in tree.xpath("//BaseTableCatalog/BaseTable"):
         table_name = table.attrib["name"]
-        fields = []
+        fields = {}
 
         # Find all Field elements within the table
         for field in table.xpath(".//FieldCatalog/Field"):
@@ -38,23 +37,28 @@ def parse_fm_ddr(xml_file: str) -> list[list[str, str, str]]:
             field_comment = field.xpath(".//Comment/text()")
             field_comment = field_comment[0] if field_comment else None
             python_type = FILEMAKER_TO_PYTHON_TYPES.get(field_type, "str")
-            fields.append([field_name, python_type, field_comment])
+            fields[field_name] = {
+                "field_type": python_type,
+                "field_comment": field_comment
+            }
 
-        tables.append([table_name, fields])
+        tables[table_name] = fields
 
     return tables
 
-def generate_pydantic_models(tables):
+def generate_pydantic_models(tables: Dict[str, Dict[str, Dict[str, str]]]) -> str:
     """Generates Pydantic models as Python code."""
     models_code = PYDANTIC_IMPORTS
 
-    for table_name, fields in tables:
+    for table_name, fields in tables.items():
         model_name = table_name.capitalize()
         models_code += f"\n\nclass {model_name}(BaseModel):\n"
-        for field_name, field_type, field_comment in fields:
+        for field_name, field_info in fields.items():
             snake_cased_field_name = field_name.lower().replace(" ", "_")
+            field_type = field_info["field_type"]
+            field_comment = field_info["field_comment"]
 
-            default_value=None
+            default_value = None
             args = [default_value]
             if field_comment:
                 args.append(f"description=\"{field_comment}\"")
