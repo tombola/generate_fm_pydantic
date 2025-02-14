@@ -1,0 +1,21 @@
+[project]
+name = "generate-fm-pydantic"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "tombola", email = "tombola@github" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "lxml>=5.3.1",
+    "pydantic>=2.10.6",
+    "pytest>=8.3.4",
+]
+
+[project.scripts]
+generate-fm-pydantic = "generate_fm_pydantic:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
