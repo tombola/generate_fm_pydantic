@@ -4,8 +4,8 @@ import pytest
 def test_parse_xml():
     tables = parse_fm_ddr("tests/data/inventory_test_fmp12.xml")
     assert list(tables.keys()) == ["Products", "Inventory Transactions"]
-    assert tables["Products"]["Date"]["field_type"] == "datetime.date"
-    assert tables["Products"]["CreationTimestamp"]["field_type"] == "str"
+    assert tables["Products"]["Date"]["field_type"] == "Date"
+    assert tables["Products"]["CreationTimestamp"]["field_type"] == "TimeStamp"
     assert tables["Products"]["CreationTimestamp"]["field_comment"] == "Date and time each record was created"
     print(tables)
 

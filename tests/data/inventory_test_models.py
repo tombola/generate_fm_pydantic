@@ -12,7 +12,6 @@ class Products(BaseModel):
     part_number: str = Field(None)
     bar_code: str = Field(None)
     description: str = Field(None)
-    image: str = Field(None)
     location: str = Field(None)
     taxable: str = Field(None)
     unit_cost: float = Field(None)
@@ -25,8 +24,8 @@ class Products(BaseModel):
     modifiedby: str = Field(None, description="Account name of the user who last modified each record")
     availability: str = Field(None)
     reorder_level: float = Field(None)
-    creationtimestamp: str = Field(None, description="Date and time each record was created")
-    modificationtimestamp: str = Field(None, description="Date and time each record was last modified")
+    creationtimestamp: datetime.datetime = Field(None, description="Date and time each record was created")
+    modificationtimestamp: datetime.datetime = Field(None, description="Date and time each record was last modified")
 
 
 class InventoryTransactions(BaseModel):
@@ -40,5 +39,5 @@ class InventoryTransactions(BaseModel):
     foreignkey: str = Field(None, description="Unique identifier of each record in the related table")
     date: datetime.date = Field(None)
     units_in_|_out: float = Field(None)
-    creationtimestamp: str = Field(None, description="Date and time each record was created")
-    modificationtimestamp: str = Field(None, description="Date and time each record was last modified")
+    creationtimestamp: datetime.datetime = Field(None, description="Date and time each record was created")
+    modificationtimestamp: datetime.datetime = Field(None, description="Date and time each record was last modified")
