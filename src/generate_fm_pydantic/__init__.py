@@ -76,7 +76,7 @@ def generate_pydantic_models(tables: Dict[str, Dict[str, Dict[str, str]]], skip_
 
     return models_code
 
-def generate_models_from_ddr(input_file, all_field_types):
+def generate_models_from_ddr(input_file, all_field_types=None):
     tables = parse_fm_ddr(input_file)
     if all_field_types:
         return generate_pydantic_models(tables)
